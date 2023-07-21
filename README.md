@@ -85,7 +85,7 @@ Meaning it accepts an interaction and the same URL and referrer that were used t
 and returns a new interaction, that could have any of its properties changed or have new ones added.
 
 Unlike some implementations of middleware, it is not responsible for calling the next one in line.  
-They are simply executed in the order they were registered by the logger itself after the initial interaction has been determined.
+They are simply executed by the logger itself after the initial interaction has been determined in the order they were registered.
 
 Once all middlewares are done it is determined whether attribution has changed, and if so the interaction is logged.
 
