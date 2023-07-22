@@ -12,7 +12,7 @@ export default class InteractionLogger {
     };
 
     private interactionMiddlewares: InteractionMiddleware[] = [];
-    private attributionChangesCallbacks: Array<(Interaction) => any> = [];
+    private attributionChangeCallbacks: Array<(Interaction) => any> = [];
 
     /** A minute in milliseconds */
     public static readonly MINUTE = 1000 * 60;
@@ -57,7 +57,7 @@ export default class InteractionLogger {
 
         if (this.hasAttributionChanged(interaction, lastInteractionTimestamp)) {
             // Notify all subscribers that the attribution has changed and pass along the latest attribution
-            this.attributionChangesCallbacks.forEach((callback) => callback(interaction));
+            this.attributionChangeCallbacks.forEach((callback) => callback(interaction));
 
             this.logChangedAttribution(interaction);
         }
@@ -114,8 +114,8 @@ export default class InteractionLogger {
      * Multiple callbacks can be registered this way.
      * Can be used for debugging or synchronising the attribution log whenever it changes.
      */
-    public onAttributionChanged(callback: (latestAttribution: Interaction) => any) {
-        this.attributionChangesCallbacks.push(callback);
+    public onAttributionChange(callback: (latestAttribution: Interaction) => any) {
+        this.attributionChangeCallbacks.push(callback);
     }
 
     public interactionLog(): Interaction[] {
