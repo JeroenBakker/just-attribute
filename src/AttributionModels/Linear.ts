@@ -20,17 +20,8 @@ export default class Linear implements AttributionModel {
         return includedInteractions.map((interaction) => {
             return {
                 ...interaction,
-                weight: 1 / interactions.length,
+                weight: 1 / includedInteractions.length,
             }
-        });
-    }
-
-    public distributeValue(interactions: WeightedInteraction[], value: number): Array<WeightedInteraction & {value: number}> {
-        return interactions.map((interaction: WeightedInteraction) => {
-            return {
-                ...interaction,
-                value: interaction.weight * value,
-            };
         });
     }
 }
