@@ -2,9 +2,12 @@
 
 > _This is not the greatest script in the world, no. This is just-attribute._
 
-This package is intended to help websites track (marketing) attribution in a privacy-conscious way.
-It does so by not storing anything about the user or the pages they visit, 
-only things such as UTM parameters, and optionally referrers, are taken into account and logged.
+This package is intended to help websites track realtime (marketing) attribution in a privacy-conscious way.
+It does so by not storing anything about the user or the pages they visit,
+only URL parameters and optionally referrers are taken into account and logged.
+
+Unlike tools such as Google Analytics where it might take over a day for attribution data to be available,
+you can use the data this package gathers immediately, inside the browser or anywhere else.
 
 This is purely intended to be used on the web, mobile apps have not been taken into account. 
 
@@ -17,7 +20,7 @@ const logger = new InteractionLogger(localStorage);
 logger.pageview();
 ```
 
-This will build an interaction out of the current pageview, taking into account URL parameters and optionally the referrer.
+This will build an `Interaction` out of the current pageview, taking into account URL parameters and optionally the referrer.
 If the interaction is deemed to have changed attribution it will be logged.
 
 If you want to disable the automatic processing of the referrer
