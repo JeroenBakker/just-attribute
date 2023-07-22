@@ -122,7 +122,6 @@ To do:
 - [ ] Add out of the box implementation for recognising organic search based on a list of domains
 - [ ] Add out of the box implementation for recognising organic social media based on a list of domains
 - [ ] Add out of the box implementation for running attribution models in BigQuery using javascript UDFs
-- [ ] Add a license
 - [ ] Describe how to contribute
 - [ ] Add a code style linter/fixer to make contributing easier
 
