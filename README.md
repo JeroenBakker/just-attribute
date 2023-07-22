@@ -50,7 +50,7 @@ which is essentially the same as accessing the latest interaction at any time.
 
 ```javascript
 const logger = new InteractionLogger(localStorage);
-console.log(logger.lastChangedInteraction());
+console.log(logger.lastInteraction());
 // e.g. {source: 'foo', medium: 'bar', timestamp: 1689880963075}
 ```
 
