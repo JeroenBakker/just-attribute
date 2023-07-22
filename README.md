@@ -9,7 +9,9 @@ only URL parameters and optionally referrers are taken into account and logged.
 Unlike tools such as Google Analytics where it might take over a day for attribution data to be available,
 you can use the data this package gathers immediately, inside the browser or anywhere else.
 
-This is purely intended to be used on the web, mobile apps have not been taken into account. 
+This is not meant to be a full replacement of an analytics tool, 
+which usually measures things such as sessions, landing pages, interactions, revenue and more.  
+This just attributes, and it is small enough (around 1kb gzipped) that it can be used alongside such tools if you want to.
 
 ## Usage
 
@@ -57,6 +59,8 @@ console.log(logger.lastInteraction());
 // e.g. {source: 'foo', medium: 'bar', timestamp: 1689880963075}
 ```
 
+[//]: # (todo: mention the configuration of session expirations)
+
 ## Attribution models
 
 Attribution is modeled from the log of interactions by an attribution model implementation.  
@@ -78,6 +82,37 @@ Multi-interaction models return a list of weighted interactions, where the weigh
 that you can apply to something like an order value.
 
 A [simple function](src/distributeValue.ts) is provided to distribute a value over a list of weighted interactions.
+
+## Attributing traffic
+
+Maybe your use case doesn't have a real "conversion" and there is no clear point at which you want to determine attribution.  
+Perhaps you just want to know where the people who visit your site come from.
+
+Since just-attribute doesn't track users or sessions like an analytics tool, it can't really give you statistics on these things.  
+But it can still be used to get a sense of where people come from, and how often your site is visited.
+
+You can use the `onAttributionChange()` method to register a callback that will be triggered any time attribution changes.  
+This would occur whenever someone first visit, the first time after a session has expired, 
+or whenever there are new UTM parameters or there is a new referrer.
+
+Essentially this triggers whenever someone goes to your site, and as such it can be used to attribute new traffic.
+
+```javascript
+const logger = new InteractionLogger(localStorage);
+
+logger.onAttributionChange((interaction) => {
+    // Store information about the interaction on a server or in some analytics tool
+    // where this data can be aggregated and visualized
+    fetch('/attribute-traffic', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(interaction),
+    });
+});
+
+// Only after registering this callback should you process the pageview
+logger.pageview();
+```
 
 ## Middleware
 
@@ -118,11 +153,12 @@ Or you could apply multiple attribution models to compare the outcomes.
 
 ## Acknowledgements
 
-To do:  
+This is purely intended to be used on the web, mobile apps have not been taken into account.  
+There is currently no planned support for tracking redeemed discount codes or other promotions which could be used to attribute orders.
+
+Planned:  
 - [ ] Add out of the box implementation for recognising organic search based on a list of domains
 - [ ] Add out of the box implementation for recognising organic social media based on a list of domains
 - [ ] Add out of the box implementation for running attribution models in BigQuery using javascript UDFs
 - [ ] Describe how to contribute
 - [ ] Add a code style linter/fixer to make contributing easier
-
-There is currently no planned support for tracking redeemed discount codes or other promotions which could be used to attribute orders.

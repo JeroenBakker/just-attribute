@@ -113,7 +113,7 @@ test('it calls callback on changed attribution', () => {
     const logger = new InteractionLogger(new MemoryStorage());
     const callback = jest.fn();
 
-    logger.onAttributionChanged(callback);
+    logger.onAttributionChange(callback);
     logger.pageview(new URL('https://example.com/'), false);
 
     expect(callback).toHaveBeenCalledWith({direct: true, timestamp: expect.any(Number)});
