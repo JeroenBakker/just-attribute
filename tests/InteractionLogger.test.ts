@@ -171,11 +171,16 @@ test('it handles an invalid last interaction', () => {
 
     // Logging an interaction will make sure this test fails if we don't set invalid data
     // which could happen if the data is accidentally valid or if we use the wrong key
+    // It also registers a non-direct interaction as the latest interaction
+    logger.pageview(new URL('https://example.com/?utm_source=foo&utm_medium=bar'), false);
+
+    storage.setItem('ja_last_interaction', 'invalid number');
+
+    // A direct interaction should only be logged if the session has timed out
+    // the invalid number above should cause this interaction to always be considered
     logger.pageview(new URL('https://example.com/'), false);
 
-    storage.setItem('ja_last_interaction', '<invalid_json>');
-
-    expect(logger.lastInteraction()).toEqual(null);
+    expect(logger.lastInteraction()?.direct).toBe(true);
 });
 
 test('it handles the default URL', () => {
@@ -253,19 +258,19 @@ test('attribution changes on changed important parameters', () => {
 });
 
 test('attribution changes after session expires', async () => {
-    const logger = new InteractionLogger(new MemoryStorage(), 100);
+    const logger = new InteractionLogger(new MemoryStorage(), false, 100);
 
     const url = 'https://example.com/';
 
     // First interaction, new attribution
-    logger.pageview(new URL(url + '?test=1'), false);
+    logger.pageview(new URL(url + '?test=1'));
 
     // Second interaction, no new attribution
-    logger.pageview(new URL(url + '?test=2'), false);
+    logger.pageview(new URL(url + '?test=2'));
 
     // Third interaction after session timeout, new attribution
     await new Promise((r) => setTimeout(r, 101));
-    logger.pageview(new URL(url + '?test=3'), false);
+    logger.pageview(new URL(url + '?test=3'));
 
     expect(logger.interactionLog()).toEqual([
         // The actual timestamps don't matter, what matters is that we got new direct attribution
