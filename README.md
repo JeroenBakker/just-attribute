@@ -163,3 +163,8 @@ Planned:
 - Add out of the box implementation for running attribution models in BigQuery using javascript UDFs
 - Describe how to contribute
 - Add a code style linter/fixer to make contributing easier
+
+Undecided:
+- Whether to log the page URL as part of the interaction, this would allow users to get information about landing pages and how they perform.  
+  This is not intended as a full analytics tool, but this would take almost no effort to add and could provide a lot of value.  
+  This can always be implemented as a middleware, but if it adds enough value it might make more sense to just enable it out of the box.
