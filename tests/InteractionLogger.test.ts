@@ -300,3 +300,40 @@ test('interaction timestamp is used', async () => {
     // Since the third interaction is direct but after the session timeout attribution should have changed
     expect(logger.lastInteraction()).toEqual(thirdInteraction);
 });
+
+test('the oldest interactions are removed once the log goes over its limit', async () => {
+    // Set the log limit to 2
+    const logger = new InteractionLogger(new MemoryStorage(), false, 100, 2);
+
+    logger.processInteraction({source: 'foo', medium: '1', timestamp: 1});
+    logger.processInteraction({source: 'foo', medium: '2', timestamp: 2});
+
+    expect(logger.interactionLog()).toEqual([
+        {source: 'foo', medium: '1', timestamp: 1},
+        {source: 'foo', medium: '2', timestamp: 2},
+    ]);
+
+    logger.processInteraction({source: 'foo', medium: '3', timestamp: 3});
+    expect(logger.interactionLog()).toEqual([
+        {source: 'foo', medium: '2', timestamp: 2},
+        {source: 'foo', medium: '3', timestamp: 3},
+    ]);
+});
+
+test('it handles an older log that is too large', async () => {
+    const storage = new MemoryStorage();
+    const loggerWithLimit4 = new InteractionLogger(storage, false, 100, 4);
+    const loggerWithLimit2 = new InteractionLogger(storage, false, 100, 2);
+
+    loggerWithLimit4.processInteraction({source: 'foo', medium: '1', timestamp: 1});
+    loggerWithLimit4.processInteraction({source: 'foo', medium: '2', timestamp: 2});
+    loggerWithLimit4.processInteraction({source: 'foo', medium: '3', timestamp: 3});
+
+    // Since they operate on the same storage, this instance will be logging to a log above its limit
+    loggerWithLimit2.processInteraction({source: 'foo', medium: '4', timestamp: 4});
+
+    expect(loggerWithLimit2.interactionLog()).toEqual([
+        {source: 'foo', medium: '3', timestamp: 3},
+        {source: 'foo', medium: '4', timestamp: 4},
+    ]);
+});
