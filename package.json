@@ -9,7 +9,7 @@
     "build": "esbuild index.ts --bundle --minify --outfile=./dist/just-attribute.js",
     "test": "jest"
   },
-  "main": "dist/attribute.js",
+  "main": "src/InteractionLogger.ts",
   "dependencies": {},
   "devDependencies": {
     "@jest/globals": "^29.6.1",
@@ -18,5 +18,20 @@
     "ts-jest": "^29.1.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.1.6"
-  }
+  },
+  "files": [
+    "src",
+    "types.ts"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JeroenBakker/just-attribute.git"
+  },
+  "keywords": [
+    "attribution"
+  ],
+  "bugs": {
+    "url": "https://github.com/JeroenBakker/just-attribute/issues"
+  },
+  "homepage": "https://github.com/JeroenBakker/just-attribute#readme"
 }

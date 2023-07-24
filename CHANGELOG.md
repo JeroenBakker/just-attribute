@@ -9,7 +9,7 @@ For easy reference, some examples of formats are kept at the bottom of this file
 
 ## [Unreleased]
 
-## [0.1.0] - 2023-07-22
+## [0.1.0] - 2023-07-24
 
 The first version!
 
