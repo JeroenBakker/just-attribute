@@ -157,6 +157,7 @@ This is purely intended to be used on the web, mobile apps have not been taken i
 There is currently no planned support for tracking redeemed discount codes or other promotions which could be used to attribute orders.
 
 Planned:  
+- [ ] Prevent interaction log from growing too large, possibly by limiting the number of logged interactions of by removing entries that are too old
 - [ ] Add out of the box implementation for recognising organic search based on a list of domains
 - [ ] Add out of the box implementation for recognising organic social media based on a list of domains
 - [ ] Add out of the box implementation for running attribution models in BigQuery using javascript UDFs
