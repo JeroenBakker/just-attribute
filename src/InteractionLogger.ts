@@ -27,6 +27,11 @@ export default class InteractionLogger {
         /** Setting this property to false will disable the processing of the referrer */
         public detectReferrals: boolean = true,
         private readonly sessionTimeout: number = InteractionLogger.MINUTE * 30,
+        /**
+         * The maximum amount of interactions that will be retained in the log
+         * once the log goes above this limit the oldest entries will be cleared.
+         */
+        private readonly logLimit: number = 100,
     ) {
     }
 
@@ -72,7 +77,7 @@ export default class InteractionLogger {
             // Notify all subscribers that the attribution has changed and pass along the latest attribution
             this.attributionChangeCallbacks.forEach((callback) => callback(interaction));
 
-            this.logChangedAttribution(interaction);
+            this.logInteraction(interaction);
         }
     }
 
@@ -235,11 +240,16 @@ export default class InteractionLogger {
     /**
      * Logs an interaction which caused an attribution change
      */
-    private logChangedAttribution(interaction: Interaction): void {
+    private logInteraction(interaction: Interaction): void {
         interaction.timestamp ??= Date.now();
 
-        const log = this.interactionLog();
+        let log = this.interactionLog();
         log.push(interaction);
+
+        // If the log is over its limit, only keep the most recent entries
+        if (log.length > this.logLimit) {
+            log = log.slice(-this.logLimit);
+        }
 
         this.storage.setItem(InteractionLogger.logStorageKey, JSON.stringify(log));
     }
