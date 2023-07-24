@@ -31,8 +31,11 @@ export default class InteractionLogger {
     }
 
     /**
+     * Processes a URL and/or referrer and then processes the interaction that's created from them.
      * If either the url or referrer are omitted they will be gathered from the document.
-     * If you wish to disable the gathering of the referrer you can pass false as the argument.
+     *
+     * If you wish to disable the gathering of the referrer for a specific pageview you can pass false as the argument,
+     * e.g. on pages that are often redirected to by payment providers to prevent accidental referral attribution.
      */
     public pageview(url?: URL, referrer?: URL|false) {
         if (typeof url === 'undefined') {
@@ -47,6 +50,16 @@ export default class InteractionLogger {
 
         let interaction: Interaction = this.determineInteraction(url, referrer || undefined);
 
+        this.processInteraction(interaction, url, referrer);
+    }
+
+    /**
+     *
+     * @param interaction
+     * @param url
+     * @param referrer
+     */
+    public processInteraction(interaction: Interaction, url?: URL, referrer?: URL | false) {
         // Retrieve the time of the last interaction and log the current interaction as the new last interaction
         const lastInteractionTimestamp = this.lastInteractionTimestamp();
         this.logLastInteractionTimestamp(interaction);
