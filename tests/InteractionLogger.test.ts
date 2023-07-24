@@ -101,7 +101,7 @@ test.each([
     expect(logger.interactionLog()).toEqual(expectedAttributionLog);
 });
 
-test('it retrieves log', () => {
+test('it retrieves log', async () => {
     const logger = new InteractionLogger(storageSpy);
 
     logger.interactionLog();
@@ -109,7 +109,7 @@ test('it retrieves log', () => {
     expect(storageSpy.getItem).toHaveBeenCalledWith('ja_interaction_log');
 });
 
-test('it calls callback on changed attribution', () => {
+test('it calls callback on changed attribution', async () => {
     const logger = new InteractionLogger(new MemoryStorage());
     const callback = jest.fn();
 
@@ -127,7 +127,7 @@ test('it calls callback on changed attribution', () => {
     expect(callback).toHaveBeenCalledTimes(2);
 });
 
-test('it clears the log', () => {
+test('it clears the log', async () => {
     const logger = new InteractionLogger(new MemoryStorage());
     logger.pageview(new URL('https://example.com/'), false);
 
@@ -137,7 +137,7 @@ test('it clears the log', () => {
     expect(logger.interactionLog().length).toBe(0);
 });
 
-test('it does not clear the whole storage', () => {
+test('it does not clear the whole storage', async () => {
     const logger = new InteractionLogger(storageSpy);
 
     logger.clearLog();
@@ -146,13 +146,13 @@ test('it does not clear the whole storage', () => {
     expect(storageSpy.clear).toHaveBeenCalledTimes(0);
 });
 
-test('it handles an empty log', () => {
+test('it handles an empty log', async () => {
     const logger = new InteractionLogger(new MemoryStorage());
 
     expect(logger.interactionLog()).toEqual([]);
 });
 
-test('it handles an invalid log', () => {
+test('it handles an invalid log', async () => {
     const storage = new MemoryStorage();
     const logger = new InteractionLogger(storage);
 
@@ -165,7 +165,7 @@ test('it handles an invalid log', () => {
     expect(logger.interactionLog()).toEqual([]);
 });
 
-test('it handles an invalid last interaction', () => {
+test('it handles an invalid last interaction', async () => {
     const storage = new MemoryStorage();
     const logger = new InteractionLogger(storage);
 
@@ -183,7 +183,7 @@ test('it handles an invalid last interaction', () => {
     expect(logger.lastInteraction()?.direct).toBe(true);
 });
 
-test('it handles the default URL', () => {
+test('it handles the default URL', async () => {
     const logger = new InteractionLogger(new MemoryStorage());
 
     globalThis.document = {
@@ -199,7 +199,7 @@ test('it handles the default URL', () => {
     expect(logger.interactionLog()).toEqual([{source: 'foo', medium: 'bar', timestamp: expect.any(Number)}]);
 });
 
-test('it handles the default referrer', () => {
+test('it handles the default referrer', async () => {
     const logger = new InteractionLogger(new MemoryStorage());
 
     // @ts-ignore
@@ -213,7 +213,7 @@ test('it handles the default referrer', () => {
     expect(logger.interactionLog()).toEqual([{source: 'foo.bar', medium: 'referral', timestamp: expect.any(Number)}]);
 });
 
-test('it registers InteractionMiddleware', () => {
+test('it registers InteractionMiddleware', async () => {
     const logger = new InteractionLogger(new MemoryStorage());
     logger.registerInteractionMiddleware(TestMiddleware);
 
@@ -230,7 +230,7 @@ test('it registers InteractionMiddleware', () => {
     ]);
 });
 
-test('attribution changes on changed important parameters', () => {
+test('attribution changes on changed important parameters', async () => {
     const logger = new InteractionLogger(new MemoryStorage());
     logger.registerInteractionMiddleware(TestMiddleware);
 
@@ -277,4 +277,26 @@ test('attribution changes after session expires', async () => {
         {direct: true, parameters: {test: '1'}, timestamp: expect.any(Number)},
         {direct: true, parameters: {test: '3'}, timestamp: expect.any(Number)},
     ]);
+});
+
+test('interaction timestamp is used', async () => {
+    const sessionTimeout = 100;
+    const logger = new InteractionLogger(new MemoryStorage(), false, sessionTimeout);
+
+    const firstInteraction = {source: 'test', medium: 'test', timestamp: 123};
+
+    logger.processInteraction(firstInteraction);
+    expect(logger.lastInteraction()).toEqual(firstInteraction);
+
+    const secondInteraction = {direct: true, timestamp: firstInteraction.timestamp + (sessionTimeout / 2)};
+    logger.processInteraction(secondInteraction);
+
+    // Since the second interaction is direct and within the session timeout attribution should not have changed
+    expect(logger.lastInteraction()).toEqual(firstInteraction);
+
+    const thirdInteraction = {direct: true, timestamp: secondInteraction.timestamp + sessionTimeout + 1};
+    logger.processInteraction(thirdInteraction);
+
+    // Since the third interaction is direct but after the session timeout attribution should have changed
+    expect(logger.lastInteraction()).toEqual(thirdInteraction);
 });
