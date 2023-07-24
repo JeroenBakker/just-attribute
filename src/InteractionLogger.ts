@@ -93,7 +93,7 @@ export default class InteractionLogger {
             }
         });
 
-        if (InteractionLogger.isInteractionComplete(interaction)) {
+        if (interaction.source && interaction.medium) {
             return interaction;
         }
 
@@ -165,10 +165,6 @@ export default class InteractionLogger {
             source: referrer.hostname,
             medium: 'referral',
         };
-    }
-
-    private static isInteractionComplete(interaction: Interaction): boolean {
-        return !! (interaction.source && interaction.medium);
     }
 
     private hasAttributionChanged(interaction: Interaction, lastInteractionTimestamp: number|null): boolean {
