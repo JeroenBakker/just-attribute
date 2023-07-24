@@ -278,3 +278,25 @@ test('attribution changes after session expires', async () => {
         {direct: true, parameters: {test: '3'}, timestamp: expect.any(Number)},
     ]);
 });
+
+test('interaction timestamp is used', async () => {
+    const sessionTimeout = 100;
+    const logger = new InteractionLogger(new MemoryStorage(), false, sessionTimeout);
+
+    const firstInteraction = {source: 'test', medium: 'test', timestamp: 123};
+
+    logger.processInteraction(firstInteraction);
+    expect(logger.lastInteraction()).toEqual(firstInteraction);
+
+    const secondInteraction = {direct: true, timestamp: firstInteraction.timestamp + (sessionTimeout / 2)};
+    logger.processInteraction(secondInteraction);
+
+    // Since the second interaction is direct and within the session timeout attribution should not have changed
+    expect(logger.lastInteraction()).toEqual(firstInteraction);
+
+    const thirdInteraction = {direct: true, timestamp: secondInteraction.timestamp + sessionTimeout + 1};
+    logger.processInteraction(thirdInteraction);
+
+    // Since the third interaction is direct but after the session timeout attribution should have changed
+    expect(logger.lastInteraction()).toEqual(thirdInteraction);
+});
