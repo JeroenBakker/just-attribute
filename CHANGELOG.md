@@ -9,6 +9,13 @@ For easy reference, some examples of formats are kept at the bottom of this file
 
 ## [Unreleased]
 
+Implemented this release automation: https://superface.ai/blog/npm-publish-gh-actions-changelog
+
+### Added
+
+- GitHub action to publish new versions to npm
+- Automatically move unreleased changed to a new release section in the changelog
+
 ## [0.2.0] - 2023-07-26
 
 ### Added
