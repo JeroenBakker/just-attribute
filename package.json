@@ -1,15 +1,18 @@
 {
   "name": "@jeroen.bakker/just-attribute",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Realtime privacy-conscious marketing attribution for the web",
   "author": "Jeroen Bakker",
   "license": "MIT",
   "scripts": {
-    "debug": "esbuild debug.ts --bundle --minify --outfile=./dist/just-attribute-debug.js",
-    "build": "esbuild index.ts --bundle --minify --outfile=./dist/just-attribute.js",
-    "test": "jest"
+    "build": "esbuild src/*.ts src/*/*.ts --outdir=dist --bundle --format=esm --minify",
+    "tsc": "tsc",
+    "test": "jest",
+    "prepublishOnly": "npm run build && npm run tsc"
   },
-  "main": "src/InteractionLogger.ts",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "dependencies": {},
   "devDependencies": {
     "@jest/globals": "^29.6.1",
@@ -21,7 +24,7 @@
   },
   "files": [
     "src",
-    "types.ts"
+    "dist"
   ],
   "repository": {
     "type": "git",

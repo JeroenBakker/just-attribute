@@ -1,4 +1,4 @@
-import { AttributionModel, Interaction } from '../../types';
+import { AttributionModel, Interaction } from '../types';
 
 /**
  * This implements the "first interaction" attribution model
@@ -6,15 +6,15 @@ import { AttributionModel, Interaction } from '../../types';
  *
  * Since only one interaction is returned, it is not weighted
  */
-export default class FirstInteraction implements AttributionModel {
-    public attribute(interactions: Interaction[]): Interaction {
-        if (interactions.length === 0) {
-            return null;
-        }
-
-        const filteredInteractions = interactions.filter((interaction) => !interaction.excluded);
-
-        // If all we had were excluded interactions we return the first one as it's better than nothing
-        return filteredInteractions.shift() || interactions.shift();
+const firstInteraction: AttributionModel = (interactions: Interaction[]): Interaction => {
+    if (interactions.length === 0) {
+        return null;
     }
+
+    const filteredInteractions = interactions.filter((interaction) => !interaction.excluded);
+
+    // If all we had were excluded interactions we return the first one as it's better than nothing
+    return filteredInteractions.shift() || interactions.shift();
 }
+
+export default firstInteraction;

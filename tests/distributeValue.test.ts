@@ -1,5 +1,5 @@
 import { expect, test } from '@jest/globals';
-import { WeightedInteraction } from '../types';
+import { WeightedInteraction } from '../src/types';
 import distributeValue from '../src/distributeValue';
 
 test.each([

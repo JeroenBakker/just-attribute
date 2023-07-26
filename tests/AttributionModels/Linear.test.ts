@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals';
-import { Interaction, WeightedInteraction } from '../../types';
-import Linear from '../../src/AttributionModels/Linear';
+import { Interaction, WeightedInteraction } from '../../src/types';
+import linear from '../../src/AttributionModels/Linear';
 
 test.each([
     [
@@ -94,8 +94,7 @@ test.each([
         ],
     ],
 ])('it returns the correct attribution based on non-excluded interactions', (interactions: Interaction[], expectedAttributions: WeightedInteraction[]) => {
-    const linear = new Linear();
-    const attributions = linear.attribute(interactions);
+    const attributions = linear(interactions);
 
     expect(attributions).toEqual(expectedAttributions);
 });

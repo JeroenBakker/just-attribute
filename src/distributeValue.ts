@@ -1,4 +1,4 @@
-import { WeightedInteraction } from '../types';
+import { WeightedInteraction } from './types';
 
 /**
  * Distributes a value over a list of weighted interactions, will overwrite previous values.

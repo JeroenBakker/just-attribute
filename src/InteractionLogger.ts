@@ -1,4 +1,4 @@
-import { InteractionMiddleware, Interaction } from '../types';
+import { InteractionMiddleware, Interaction } from './types';
 
 export default class InteractionLogger {
     private static readonly logStorageKey = 'ja_interaction_log';

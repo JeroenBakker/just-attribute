@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals';
-import { Interaction } from '../../types';
-import LastNonDirectInteraction from '../../src/AttributionModels/LastNonDirectInteraction';
+import { Interaction } from '../../src/types';
+import lastNonDirectInteraction from '../../src/AttributionModels/LastNonDirectInteraction';
 
 test.each([
     [
@@ -65,8 +65,7 @@ test.each([
         {source: 'test', medium: 'test', excluded: true},
     ],
 ])('it returns the last non-excluded non-direct interaction', (interactions: Interaction[], expectedAttribution: Interaction) => {
-    const lastNonDirectInteraction = new LastNonDirectInteraction();
-    const attribution = lastNonDirectInteraction.attribute(interactions);
+    const attribution = lastNonDirectInteraction(interactions);
 
     expect(attribution).toEqual(expectedAttribution);
 });

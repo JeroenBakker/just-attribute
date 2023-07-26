@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals';
-import { Interaction } from '../../types';
-import { FacebookAdsMiddleware } from '../../src/InteractionMiddlewares/FacebookAdsMiddleware';
+import { Interaction } from '../../src/types';
+import facebookAdsMiddleware from '../../src/InteractionMiddlewares/FacebookAds';
 
 test.each([
     // Parameter should be used to determine facebook / cpc
@@ -34,5 +34,5 @@ test.each([
         {parameters: {gclid: 'abc123'}},
     ],
 ])('it attributes Facebook Ads', (currentInteraction: Interaction, expectedInteraction: Interaction ) => {
-    expect(FacebookAdsMiddleware(currentInteraction)).toEqual(expectedInteraction);
+    expect(facebookAdsMiddleware(currentInteraction)).toEqual(expectedInteraction);
 });

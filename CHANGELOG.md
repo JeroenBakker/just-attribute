@@ -9,6 +9,19 @@ For easy reference, some examples of formats are kept at the bottom of this file
 
 ## [Unreleased]
 
+## [0.2.0] - 2023-07-26
+
+### Added
+
+- An index.js that exports everything from the package
+- Compiled javascript in the published package
+- Separate type definitions in the published package
+
+### Changed
+
+- The middlewares are now functions instead of objects with methods
+- The attribution models are now functions instead of objects with methods
+
 ## [0.1.0] - 2023-07-24
 
 The first version!

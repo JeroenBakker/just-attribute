@@ -1,6 +1,6 @@
-import { InteractionMiddleware, Interaction } from '../../types';
+import { InteractionMiddleware, Interaction } from '../types';
 
-export const FacebookAdsMiddleware: InteractionMiddleware = (currentInteraction: Interaction): Interaction => {
+const facebookAds: InteractionMiddleware = (currentInteraction: Interaction): Interaction => {
     // If it is already attributed to something just return that
     if (currentInteraction.source && currentInteraction.medium) {
         return currentInteraction;
@@ -24,3 +24,5 @@ export const FacebookAdsMiddleware: InteractionMiddleware = (currentInteraction:
 
     return interaction;
 }
+
+export default facebookAds;

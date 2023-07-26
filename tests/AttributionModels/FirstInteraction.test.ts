@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals';
-import { Interaction } from '../../types';
-import FirstInteraction from '../../src/AttributionModels/FirstInteraction';
+import { Interaction } from '../../src/types';
+import firstInteraction from '../../src/AttributionModels/FirstInteraction';
 
 test.each([
     [
@@ -66,8 +66,7 @@ test.each([
         {direct: true, excluded: true},
     ],
 ])('it returns the first non-excluded interaction', (interactions: Interaction[], expectedAttribution: Interaction) => {
-    const firstInteraction = new FirstInteraction();
-    const attribution = firstInteraction.attribute(interactions);
+    const attribution = firstInteraction(interactions);
 
     expect(attribution).toEqual(expectedAttribution);
 });

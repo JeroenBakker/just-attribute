@@ -1,9 +1,9 @@
-import { InteractionMiddleware, Interaction } from '../../types';
+import { InteractionMiddleware, Interaction } from '../types';
 
 /**
  * Turns URLs such as example.com?ref=foobar into referrals
  */
-export const RefMiddleware: InteractionMiddleware = (currentInteraction: Interaction): Interaction => {
+const ref: InteractionMiddleware = (currentInteraction: Interaction): Interaction => {
     // If it is already attributed to something just return that
     if (currentInteraction.source && currentInteraction.medium) {
         return currentInteraction;
@@ -26,3 +26,5 @@ export const RefMiddleware: InteractionMiddleware = (currentInteraction: Interac
 
     return interaction;
 }
+
+export default ref;
