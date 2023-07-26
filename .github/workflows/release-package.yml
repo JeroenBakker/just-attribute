@@ -1,6 +1,10 @@
 # Copied and adjusted from https://superface.ai/blog/npm-publish-gh-actions-changelog
 name: Release package
 
+# We need to be able to push the changes to the changelog
+permissions:
+  contents: write
+
 on:
   workflow_dispatch:
     inputs:
