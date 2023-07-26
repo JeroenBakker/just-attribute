@@ -67,11 +67,13 @@ jobs:
           git commit -m "chore: release ${{ env.NEW_VERSION }}"
           git tag ${{ env.NEW_VERSION }}
 
+      # Prepare npm auth
+      - name: Set npm auth token
+        run: npm set "//registry.npmjs.org/:_authToken" ${{ secrets.NPM_ACCESS_TOKEN }}
+
       # Publish version to public repository
       - name: Publish
         run: npm publish --verbose --access public --tag ${{ env.RELEASE_TAG }}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
 
       # Push repository changes
       - name: Push changes to repository
