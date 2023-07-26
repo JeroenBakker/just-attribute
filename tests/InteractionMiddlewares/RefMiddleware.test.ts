@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals';
-import { Interaction } from '../../types';
-import { RefMiddleware } from '../../src/InteractionMiddlewares/RefMiddleware';
+import { Interaction } from '../../src/types';
+import ref from '../../src/InteractionMiddlewares/Ref';
 
 test.each([
     // Parameter should be used to determine referral
@@ -34,5 +34,5 @@ test.each([
         {parameters: {gclid: 'abc123'}},
     ],
 ])('it attributes ref referrals', (currentInteraction: Interaction, expectedInteraction: Interaction) => {
-    expect(RefMiddleware(currentInteraction)).toEqual(expectedInteraction);
+    expect(ref(currentInteraction)).toEqual(expectedInteraction);
 });

@@ -41,8 +41,6 @@ export interface WeightedInteraction extends Interaction {
     value?: number;
 }
 
-export interface AttributionModel {
-    attribute(attributionLog: Interaction[]): Interaction|WeightedInteraction[]|null;
-}
+export type AttributionModel = (attributionLog: Interaction[]) => Interaction|WeightedInteraction[]|null;
 
 export type InteractionMiddleware = (currentInteraction: Interaction, url?: URL, referrer?: URL) => Interaction;

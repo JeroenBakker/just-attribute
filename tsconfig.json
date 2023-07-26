@@ -1,6 +1,7 @@
 {
   "include": [
-    "**/*.ts",
+    "src/**/*.ts",
+    "src/index.ts"
   ],
   "exclude": [
     "node_modules",
@@ -11,7 +12,10 @@
       "DOM"
     ],
     "esModuleInterop": true,
-    "noEmit": true
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationMap": true,
+    "declarationDir": "dist",
+    "rootDir": "src"
   }
 }
-

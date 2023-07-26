@@ -1,4 +1,4 @@
-import { AttributionModel, Interaction } from '../../types';
+import { AttributionModel, Interaction } from '../types';
 
 /**
  * This implements the "last interaction" attribution model
@@ -6,11 +6,11 @@ import { AttributionModel, Interaction } from '../../types';
  *
  * Since only one interaction is returned, it is not weighted
  */
-export default class LastInteraction implements AttributionModel {
-    public attribute(interactions: Interaction[]): Interaction {
-        const includedInteractions = interactions.filter((interaction) => !interaction.excluded);
+const lastInteraction: AttributionModel = (interactions: Interaction[]): Interaction => {
+    const includedInteractions = interactions.filter((interaction) => !interaction.excluded);
 
-        // Interactions are logged in order of occurrence, so we simply need to return the last one
-        return includedInteractions.pop() ?? null;
-    }
+    // Interactions are logged in order of occurrence, so we simply need to return the last one
+    return includedInteractions.pop() ?? null;
 }
+
+export default lastInteraction;

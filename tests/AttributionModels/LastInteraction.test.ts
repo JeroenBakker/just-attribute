@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals';
-import { Interaction } from '../../types';
-import LastInteraction from '../../src/AttributionModels/LastInteraction';
+import { Interaction } from '../../src/types';
+import lastInteraction from '../../src/AttributionModels/LastInteraction';
 
 test.each([
     [
@@ -38,8 +38,7 @@ test.each([
     ],
     // @ts-ignore
 ])('it returns the last non-excluded interaction', (interactions: Interaction[], expectedAttribution: Interaction) => {
-    const lastInteraction = new LastInteraction();
-    const attribution = lastInteraction.attribute(interactions);
+    const attribution = lastInteraction(interactions);
 
     expect(attribution).toEqual(expectedAttribution);
 });

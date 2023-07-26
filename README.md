@@ -13,11 +13,21 @@ This is not meant to be a full replacement of an analytics tool,
 which usually measures things such as sessions, landing pages, interactions, revenue and more.  
 This just attributes, and it is small enough (around 1kb gzipped) that it can be used alongside such tools if you want to.
 
+## Installation
+
+This package is on npm:
+
+```shell
+npm install @jeroen.bakker/just-attribute
+```
+
 ## Usage
 
 In its most basic form logging interactions (pageviews) is as simple as:
 
 ```javascript
+import { InteractionLogger } from '@jeroen.bakker/just-attribute';
+
 const logger = new InteractionLogger(localStorage);
 logger.pageview();
 ```
@@ -39,12 +49,13 @@ When it is time to finalize the list of interactions (i.e. when a user "converts
 run the log of interactions through one of the included attribution models and clear the log.
 
 ```javascript
+import { InteractionLogger, firstInteraction } from '@jeroen.bakker/just-attribute';
+
 const logger = new InteractionLogger(localStorage);
-const firstInteraction = new FirstInteraction();
 
 // Do whatever you want with the attribution, such as sync it to your server
 // it might also be a good idea to sync the logs themselves to learn from them or to debug attribution
-const attribution = firstInteraction.attribute(logger.interactionLog());
+const attribution = firstInteraction(logger.interactionLog());
 
 // Clear the log so you don't endlessly collect interactions that have already been attributed
 logger.clearLog();
@@ -128,12 +139,12 @@ They are simply executed by the logger itself after the initial interaction has 
 Once all middlewares are done it is determined whether attribution has changed, and if so the interaction is logged.
 
 A few middlewares have been provided:
-* [Google Ads](src/InteractionMiddlewares/GoogleAdsMiddleware.ts)  
+* [Google Ads](src/InteractionMiddlewares/GoogleAds.ts)  
   This sets a source / medium of google / cpc for any URL containing a `gclid` parameter.  
   Additionally, the parameter is logged as an important parameter, meaning attribution will change if it has a different value in a new interaction.
-* [Facebook Ads](src/InteractionMiddlewares/FacebookAdsMiddleware.ts)  
+* [Facebook Ads](src/InteractionMiddlewares/FacebookAds.ts)  
   Similar to the above middleware, it sets a source / medium of facebook / cpc for any URL containing a `fbclid` parameter.
-* [`ref` transformer](src/InteractionMiddlewares/RefMiddleware.ts)  
+* [`ref` transformer](src/InteractionMiddlewares/Ref.ts)  
   If a URL conains a `ref` parameter this will set its value as the source and sets the medium to referral.
 
 Please see the source of these middlewares for further details on their behavior.
@@ -162,6 +173,7 @@ Planned:
 - Add out of the box implementation for running attribution models in BigQuery using javascript UDFs
 - Describe how to contribute
 - Add a code style linter/fixer to make contributing easier
+- Set up GitHub action to publish to npm
 
 Undecided:
 - Whether to log the page URL as part of the interaction, this would allow users to get information about landing pages and how they perform.  

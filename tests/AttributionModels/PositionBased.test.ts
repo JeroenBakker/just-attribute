@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals';
-import { Interaction, WeightedInteraction } from '../../types';
-import PositionBased from '../../src/AttributionModels/PositionBased';
+import { Interaction, WeightedInteraction } from '../../src/types';
+import positionBased from '../../src/AttributionModels/PositionBased';
 
 test.each([
     [
@@ -110,8 +110,7 @@ test.each([
         ],
     ],
 ])('it returns the correct attribution based', (interactions: Interaction[], expectedAttributions: WeightedInteraction[]) => {
-    const positionBased = new PositionBased();
-    const attributions = positionBased.attribute(interactions);
+    const attributions = positionBased(interactions);
 
     expect(attributions).toEqual(expectedAttributions);
 });

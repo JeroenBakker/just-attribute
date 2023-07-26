@@ -1,4 +1,4 @@
-import { InteractionMiddleware } from '../../types';
+import { InteractionMiddleware } from '../../src/types';
 
 export const TestMiddleware: InteractionMiddleware = (currentInteraction, url, referrer) => {
     const {test, ...additionalParameters} = currentInteraction.parameters ?? {};

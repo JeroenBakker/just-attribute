@@ -1,6 +1,6 @@
 import InteractionLogger from '../src/InteractionLogger';
 import { expect, jest, test } from '@jest/globals';
-import { Interaction } from '../types';
+import { Interaction } from '../src/types';
 import MemoryStorage from './fixtures/MemoryStorage';
 import { TestMiddleware } from './fixtures/TestMiddleware';
 
