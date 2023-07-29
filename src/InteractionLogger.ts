@@ -1,4 +1,30 @@
-import { InteractionMiddleware, Interaction } from './types';
+import { Interaction, InteractionMiddleware } from './types';
+
+interface LoggerSettings {
+    /**
+     * The storage used to store the interaction log and the last interaction timestamp
+     */
+    storage: Storage,
+    /**
+     * Setting this property to false will disable the processing of the referrer.
+     */
+    detectReferrals: boolean;
+    /**
+     * If an interaction occurs after this many seconds after the previous interaction
+     * it will count as a new session, which just means a 'direct' interaction can change attribution.
+     */
+    sessionTimeout: number;
+    /**
+     * The maximum amount of interactions that will be retained in the log
+     * once the log goes above this limit the oldest entries will be cleared.
+     */
+    logLimit: number;
+    /**
+     * The maximum amount of seconds an interaction will be kept in the interaction log
+     * Whenever the log is modified all interactions that are older will be removed.
+     */
+    logRetentionTime: number;
+};
 
 export default class InteractionLogger {
     private static readonly logStorageKey = 'ja_interaction_log';
@@ -16,6 +42,19 @@ export default class InteractionLogger {
 
     /** A minute in milliseconds */
     public static readonly MINUTE = 1000 * 60;
+    /** A day in milliseconds */
+    public static readonly DAY = InteractionLogger.MINUTE * 60 * 24;
+
+    /**
+     * All these default values can be overwritten through the constructor or at any time after construction
+     */
+    public settings: LoggerSettings = {
+        storage: globalThis.localStorage,
+        detectReferrals: true,
+        sessionTimeout: InteractionLogger.MINUTE * 30,
+        logLimit: 100,
+        logRetentionTime: InteractionLogger.DAY * 30,
+    };
 
     /**
      * @param sessionTimeout How long it takes for a session to end after inactivity, in milliseconds.
@@ -23,16 +62,12 @@ export default class InteractionLogger {
      * Defaults to 30 minutes.
      */
     public constructor(
-        private readonly storage: Storage,
-        /** Setting this property to false will disable the processing of the referrer */
-        public detectReferrals: boolean = true,
-        private readonly sessionTimeout: number = InteractionLogger.MINUTE * 30,
-        /**
-         * The maximum amount of interactions that will be retained in the log
-         * once the log goes above this limit the oldest entries will be cleared.
-         */
-        private readonly logLimit: number = 100,
+        settings: Partial<LoggerSettings> = {},
     ) {
+        this.settings = {
+            ...this.settings,
+            ...settings,
+        };
     }
 
     /**
@@ -47,7 +82,7 @@ export default class InteractionLogger {
             url = new URL(document.location.href);
         }
 
-        if (typeof referrer === 'undefined' && this.detectReferrals) {
+        if (typeof referrer === 'undefined' && this.settings.detectReferrals) {
             try {
                 referrer = document.referrer ? new URL(document.referrer) : undefined;
             } catch {}
@@ -65,9 +100,12 @@ export default class InteractionLogger {
      * @param referrer
      */
     public processInteraction(interaction: Interaction, url?: URL, referrer?: URL | false) {
+        // Setting any missing timestamps now will result in consistent timestamps everywhere this interaction is referenced
+        interaction.timestamp ??= Date.now();
+
         // Retrieve the time of the last interaction and log the current interaction as the new last interaction
         const lastInteractionTimestamp = this.lastInteractionTimestamp();
-        this.logLastInteractionTimestamp(interaction);
+        this.logLastInteractionTimestamp(interaction.timestamp);
 
         for (const middleware of this.interactionMiddlewares) {
             interaction = middleware(interaction, url, referrer || undefined);
@@ -82,7 +120,7 @@ export default class InteractionLogger {
     }
 
     public determineInteraction(url: URL, referrer?: URL): Interaction {
-        const interaction: Interaction = {};
+        const interaction: Interaction = {timestamp: Date.now()};
 
         url.searchParams.forEach((value, key) => {
             const mappedKey = InteractionLogger.queryMapping[key];
@@ -137,7 +175,7 @@ export default class InteractionLogger {
     }
 
     public interactionLog(): Interaction[] {
-        const jsonLog = this.storage.getItem(InteractionLogger.logStorageKey);
+        const jsonLog = this.settings.storage.getItem(InteractionLogger.logStorageKey);
 
         if (! jsonLog) {
             return [];
@@ -155,7 +193,7 @@ export default class InteractionLogger {
      * This could be used after a user has converted and the attribution has been determined.
      */
     public clearLog(): void {
-        this.storage.setItem(InteractionLogger.logStorageKey, null);
+        this.settings.storage.setItem(InteractionLogger.logStorageKey, null);
     }
 
     public lastInteraction(): Interaction|null {
@@ -184,7 +222,7 @@ export default class InteractionLogger {
 
         // If the time difference between the current interaction and the last interaction is greater than the session timeout
         // we always consider the attribution to have changed, allowing for new 'direct' attribution
-        if (currentInteractionTimestamp - lastInteractionTimestamp > this.sessionTimeout) {
+        if (currentInteractionTimestamp - lastInteractionTimestamp > this.settings.sessionTimeout) {
             return true;
         }
 
@@ -216,15 +254,15 @@ export default class InteractionLogger {
      * Overwrites the last interaction, which is used for determining if the session has timed out.
      * This is not part of the interactionLog.
      */
-    private logLastInteractionTimestamp(interaction : Interaction): void {
-        this.storage.setItem(
+    private logLastInteractionTimestamp(timestamp: number): void {
+        this.settings.storage.setItem(
             InteractionLogger.lastInteractionTimestampStorageKey,
-            String(interaction.timestamp ?? Date.now()),
+            String(timestamp),
         );
     }
 
     private lastInteractionTimestamp(): number|null {
-        const timestampString = this.storage.getItem(InteractionLogger.lastInteractionTimestampStorageKey);
+        const timestampString = this.settings.storage.getItem(InteractionLogger.lastInteractionTimestampStorageKey);
         if (! timestampString) {
             return null;
         }
@@ -247,10 +285,10 @@ export default class InteractionLogger {
         log.push(interaction);
 
         // If the log is over its limit, only keep the most recent entries
-        if (log.length > this.logLimit) {
-            log = log.slice(-this.logLimit);
+        if (log.length > this.settings.logLimit) {
+            log = log.slice(-this.settings.logLimit);
         }
 
-        this.storage.setItem(InteractionLogger.logStorageKey, JSON.stringify(log));
+        this.settings.storage.setItem(InteractionLogger.logStorageKey, JSON.stringify(log));
     }
 }
