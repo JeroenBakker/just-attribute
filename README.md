@@ -28,21 +28,22 @@ In its most basic form logging interactions (pageviews) is as simple as:
 ```javascript
 import { InteractionLogger } from '@jeroen.bakker/just-attribute';
 
-const logger = new InteractionLogger(localStorage);
+const logger = new InteractionLogger();
 logger.pageview();
 ```
 
 This will build an `Interaction` out of the current pageview, taking into account URL parameters and optionally the referrer.
 If the interaction is deemed to have changed attribution it will be logged.
 
-If you want to disable the automatic processing of the referrer
-you can pass `false` to the `detectReferrals` parameter in the `InteractionLogger` constructor, or disable it after construction.
+If you want to disable the automatic processing of the referrer you can set `detectReferrals` to `false`
+in the options parameter of the `InteractionLogger` constructor, 
+or disable it after construction since all settings are exposed on the instance.
 
 ```javascript
 // Disable detectReferrals through the constructor
-const logger = new InteractionLogger(localStorage, false);
+const logger = new InteractionLogger({detectReferrals: false});
 // or at any other time
-logger.detectReferrals = false;
+logger.settings.detectReferrals = false;
 ```
 
 When it is time to finalize the list of interactions (i.e. when a user "converts"),
@@ -51,7 +52,7 @@ run the log of interactions through one of the included attribution models and c
 ```javascript
 import { InteractionLogger, firstInteraction } from '@jeroen.bakker/just-attribute';
 
-const logger = new InteractionLogger(localStorage);
+const logger = new InteractionLogger();
 
 // Do whatever you want with the attribution, such as sync it to your server
 // it might also be a good idea to sync the logs themselves to learn from them or to debug attribution
@@ -65,7 +66,7 @@ The simplest attribution model is the last-interaction model,
 which is essentially the same as accessing the latest interaction at any time.
 
 ```javascript
-const logger = new InteractionLogger(localStorage);
+const logger = new InteractionLogger();
 console.log(logger.lastInteraction());
 // e.g. {source: 'foo', medium: 'bar', timestamp: 1689880963075}
 ```
@@ -109,7 +110,7 @@ or whenever there are new UTM parameters or there is a new referrer.
 Essentially this triggers whenever someone goes to your site, and as such it can be used to attribute new traffic.
 
 ```javascript
-const logger = new InteractionLogger(localStorage);
+const logger = new InteractionLogger();
 
 logger.onAttributionChange((interaction) => {
     // Store information about the interaction on a server or in some analytics tool

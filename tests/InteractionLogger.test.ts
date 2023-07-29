@@ -1,5 +1,5 @@
 import InteractionLogger from '../src/InteractionLogger';
-import { expect, jest, test } from '@jest/globals';
+import { expect, jest, test, beforeEach } from '@jest/globals';
 import { Interaction } from '../src/types';
 import MemoryStorage from './fixtures/MemoryStorage';
 import { TestMiddleware } from './fixtures/TestMiddleware';
@@ -13,6 +13,10 @@ const storageSpy: any = {
     setItem: jest.fn(),
     clear: jest.fn()
 };
+
+beforeEach(() => {
+    globalThis.localStorage = new MemoryStorage();
+});
 
 test.each([
     // No parameters
@@ -42,13 +46,13 @@ test.each([
     // Referrer with parameters
     ['https://example.com/', 'https://foo.bar/?a=b', {source: 'foo.bar', medium: 'referral'}],
 ])('it determines UTM values', (currentUrl: string, referrerUrl: string, expectedValues: Interaction) => {
-    const logger = new InteractionLogger(storageSpy);
+    const logger = new InteractionLogger({storage: storageSpy});
     const url = new URL(currentUrl);
     const referrer = referrerUrl ? new URL(referrerUrl) : undefined;
 
     const interaction = logger.determineInteraction(url, referrer);
 
-    expect(interaction).toEqual(expectedValues);
+    expect(interaction).toMatchObject(expectedValues);
 });
 
 test.each([
@@ -89,7 +93,7 @@ test.each([
         [{direct: true, timestamp: expect.any(Number)}],
     ],
 ])('it logs changed attribution', (pageviews, expectedAttributionLog) => {
-    const logger = new InteractionLogger(new MemoryStorage());
+    const logger = new InteractionLogger();
 
     pageviews.forEach(({url, referrer}) => {
         logger.pageview(
@@ -102,7 +106,7 @@ test.each([
 });
 
 test('it retrieves log', async () => {
-    const logger = new InteractionLogger(storageSpy);
+    const logger = new InteractionLogger({storage: storageSpy});
 
     logger.interactionLog();
 
@@ -110,7 +114,7 @@ test('it retrieves log', async () => {
 });
 
 test('it calls callback on changed attribution', async () => {
-    const logger = new InteractionLogger(new MemoryStorage());
+    const logger = new InteractionLogger();
     const callback = jest.fn();
 
     logger.onAttributionChange(callback);
@@ -128,7 +132,7 @@ test('it calls callback on changed attribution', async () => {
 });
 
 test('it clears the log', async () => {
-    const logger = new InteractionLogger(new MemoryStorage());
+    const logger = new InteractionLogger();
     logger.pageview(new URL('https://example.com/'), false);
 
     expect(logger.interactionLog().length).toBe(1);
@@ -138,7 +142,7 @@ test('it clears the log', async () => {
 });
 
 test('it does not clear the whole storage', async () => {
-    const logger = new InteractionLogger(storageSpy);
+    const logger = new InteractionLogger({storage: storageSpy});
 
     logger.clearLog();
 
@@ -147,14 +151,14 @@ test('it does not clear the whole storage', async () => {
 });
 
 test('it handles an empty log', async () => {
-    const logger = new InteractionLogger(new MemoryStorage());
+    const logger = new InteractionLogger();
 
     expect(logger.interactionLog()).toEqual([]);
 });
 
 test('it handles an invalid log', async () => {
     const storage = new MemoryStorage();
-    const logger = new InteractionLogger(storage);
+    const logger = new InteractionLogger({storage});
 
     // Logging an interaction will make sure this test fails if we don't set invalid data
     // which could happen if the data is accidentally valid or if we use the wrong key
@@ -167,7 +171,7 @@ test('it handles an invalid log', async () => {
 
 test('it handles an invalid last interaction', async () => {
     const storage = new MemoryStorage();
-    const logger = new InteractionLogger(storage);
+    const logger = new InteractionLogger({storage});
 
     // Logging an interaction will make sure this test fails if we don't set invalid data
     // which could happen if the data is accidentally valid or if we use the wrong key
@@ -184,7 +188,7 @@ test('it handles an invalid last interaction', async () => {
 });
 
 test('it handles the default URL', async () => {
-    const logger = new InteractionLogger(new MemoryStorage());
+    const logger = new InteractionLogger();
 
     globalThis.document = {
         // @ts-ignore
@@ -200,7 +204,7 @@ test('it handles the default URL', async () => {
 });
 
 test('it handles the default referrer', async () => {
-    const logger = new InteractionLogger(new MemoryStorage());
+    const logger = new InteractionLogger();
 
     // @ts-ignore
     globalThis.document = {
@@ -214,7 +218,7 @@ test('it handles the default referrer', async () => {
 });
 
 test('it registers InteractionMiddleware', async () => {
-    const logger = new InteractionLogger(new MemoryStorage());
+    const logger = new InteractionLogger();
     logger.registerInteractionMiddleware(TestMiddleware);
 
     logger.pageview(new URL('https://example.com?utm_source=s&utm_medium=m'), false);
@@ -231,7 +235,7 @@ test('it registers InteractionMiddleware', async () => {
 });
 
 test('attribution changes on changed important parameters', async () => {
-    const logger = new InteractionLogger(new MemoryStorage());
+    const logger = new InteractionLogger();
     logger.registerInteractionMiddleware(TestMiddleware);
 
     const url = 'https://example.com?utm_source=test&utm_medium=test&test=';
@@ -258,7 +262,10 @@ test('attribution changes on changed important parameters', async () => {
 });
 
 test('attribution changes after session expires', async () => {
-    const logger = new InteractionLogger(new MemoryStorage(), false, 100);
+    const logger = new InteractionLogger({
+        sessionTimeout: 100,
+        detectReferrals: false,
+    });
 
     const url = 'https://example.com/';
 
@@ -281,7 +288,10 @@ test('attribution changes after session expires', async () => {
 
 test('interaction timestamp is used', async () => {
     const sessionTimeout = 100;
-    const logger = new InteractionLogger(new MemoryStorage(), false, sessionTimeout);
+    const logger = new InteractionLogger({
+        sessionTimeout,
+        detectReferrals: false,
+    });
 
     const firstInteraction = {source: 'test', medium: 'test', timestamp: 123};
 
@@ -302,8 +312,7 @@ test('interaction timestamp is used', async () => {
 });
 
 test('the oldest interactions are removed once the log goes over its limit', async () => {
-    // Set the log limit to 2
-    const logger = new InteractionLogger(new MemoryStorage(), false, 100, 2);
+    const logger = new InteractionLogger({logLimit: 2});
 
     logger.processInteraction({source: 'foo', medium: '1', timestamp: 1});
     logger.processInteraction({source: 'foo', medium: '2', timestamp: 2});
@@ -321,9 +330,8 @@ test('the oldest interactions are removed once the log goes over its limit', asy
 });
 
 test('it handles an older log that is too large', async () => {
-    const storage = new MemoryStorage();
-    const loggerWithLimit4 = new InteractionLogger(storage, false, 100, 4);
-    const loggerWithLimit2 = new InteractionLogger(storage, false, 100, 2);
+    const loggerWithLimit4 = new InteractionLogger({logLimit: 4});
+    const loggerWithLimit2 = new InteractionLogger({logLimit: 2});
 
     loggerWithLimit4.processInteraction({source: 'foo', medium: '1', timestamp: 1});
     loggerWithLimit4.processInteraction({source: 'foo', medium: '2', timestamp: 2});
