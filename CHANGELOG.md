@@ -11,8 +11,14 @@ Implemented this release automation: https://superface.ai/blog/npm-publish-gh-ac
 
 ### Added
 
-- GitHub action to publish new versions to npm
-- Automatically move unreleased changed to a new release section in the changelog
+- GitHub action to publish new versions to npm.
+- Automatically move unreleased changed to a new release section in the changelog.
+
+## [0.3.1] - 2023-08-01
+
+### Fixed
+
+- Added back missing types export.
 
 ## [0.3.0] - 2023-08-01
 
@@ -27,14 +33,14 @@ Implemented this release automation: https://superface.ai/blog/npm-publish-gh-ac
 
 ### Added
 
-- An index.js that exports everything from the package
-- Compiled javascript in the published package
-- Separate type definitions in the published package
+- An index.js that exports everything from the package.
+- Compiled javascript in the published package.
+- Separate type definitions in the published package.
 
 ### Changed
 
-- The middlewares are now functions instead of objects with methods
-- The attribution models are now functions instead of objects with methods
+- The middlewares are now functions instead of objects with methods.
+- The attribution models are now functions instead of objects with methods.
 
 ## [0.1.0] - 2023-07-24
 

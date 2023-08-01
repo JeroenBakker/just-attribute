@@ -8,3 +8,4 @@ export { default as firstInteraction } from './AttributionModels/FirstInteractio
 export { default as lastNonDirectInteraction } from './AttributionModels/LastNonDirectInteraction';
 export { default as linear } from './AttributionModels/Linear';
 export { default as positionBased } from './AttributionModels/PositionBased';
+export * from './types';
