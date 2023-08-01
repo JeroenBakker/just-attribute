@@ -14,6 +14,15 @@ Implemented this release automation: https://superface.ai/blog/npm-publish-gh-ac
 - GitHub action to publish new versions to npm
 - Automatically move unreleased changed to a new release section in the changelog
 
+## [0.3.0] - 2023-08-01
+
+### Changed
+
+- All settings are now passed to the constructor in an object.  
+  This allows users to more easily specify only the settings they want.
+- The storage object is now optional, defaulting to localStorage.
+- All settings can now be overwritten after instantiation.
+
 ## [0.2.0] - 2023-07-26
 
 ### Added
