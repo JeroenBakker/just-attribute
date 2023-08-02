@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.2] - 2023-08-02
+
+### Added
+
+- Settings for storage keys, the defaults are the same as before.
+
 ## [Unreleased]
 
 Implemented this release automation: https://superface.ai/blog/npm-publish-gh-actions-changelog
