@@ -14,6 +14,12 @@ Implemented this release automation: https://superface.ai/blog/npm-publish-gh-ac
 - GitHub action to publish new versions to npm.
 - Automatically move unreleased changed to a new release section in the changelog.
 
+## [0.3.2] - 2023-08-02
+
+### Added
+
+- Settings for storage keys, the defaults are the same as before.
+
 ## [0.3.1] - 2023-08-01
 
 ### Fixed

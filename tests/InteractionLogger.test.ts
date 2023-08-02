@@ -345,3 +345,22 @@ test('it handles an older log that is too large', async () => {
         {source: 'foo', medium: '4', timestamp: 4},
     ]);
 });
+
+test('the log storage key can be set', async () => {
+    const storage = new MemoryStorage();
+    const logger = new InteractionLogger({storage, logStorageKey: 'foo'});
+
+    const interaction = {source: 'foo', medium: 'bar', timestamp: 1};
+    logger.processInteraction(interaction);
+
+    expect(storage.getItem('foo')).toEqual(JSON.stringify([interaction]));
+});
+
+test('the last interaction storage key can be set', async () => {
+    const storage = new MemoryStorage();
+    const logger = new InteractionLogger({storage, lastInteractionStorageKey: 'foo'});
+
+    logger.processInteraction({source: 'foo', medium: 'bar', timestamp: 1});
+
+    expect(storage.getItem('foo')).toBe('1');
+});

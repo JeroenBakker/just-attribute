@@ -24,11 +24,17 @@ interface LoggerSettings {
      * Whenever the log is modified all interactions that are older will be removed.
      */
     logRetentionTime: number;
-};
+    /**
+     * The key that the interaction log is stored under
+     */
+    logStorageKey: string;
+    /**
+     * The key that the last interaction timestamp is stored under
+     */
+    lastInteractionStorageKey: string;
+}
 
 export default class InteractionLogger {
-    private static readonly logStorageKey = 'ja_interaction_log';
-    private static readonly lastInteractionTimestampStorageKey = 'ja_last_interaction';
     private static readonly queryMapping: Record<string, string> = {
         utm_campaign: 'campaign',
         utm_content: 'content',
@@ -54,13 +60,10 @@ export default class InteractionLogger {
         sessionTimeout: InteractionLogger.MINUTE * 30,
         logLimit: 100,
         logRetentionTime: InteractionLogger.DAY * 30,
+        logStorageKey: 'ja_interaction_log',
+        lastInteractionStorageKey: 'ja_last_interaction',
     };
 
-    /**
-     * @param sessionTimeout How long it takes for a session to end after inactivity, in milliseconds.
-     * The first interaction of a session will always be logged and can be attributed, even if it's direct.
-     * Defaults to 30 minutes.
-     */
     public constructor(
         settings: Partial<LoggerSettings> = {},
     ) {
@@ -175,7 +178,7 @@ export default class InteractionLogger {
     }
 
     public interactionLog(): Interaction[] {
-        const jsonLog = this.settings.storage.getItem(InteractionLogger.logStorageKey);
+        const jsonLog = this.settings.storage.getItem(this.settings.logStorageKey);
 
         if (! jsonLog) {
             return [];
@@ -193,7 +196,7 @@ export default class InteractionLogger {
      * This could be used after a user has converted and the attribution has been determined.
      */
     public clearLog(): void {
-        this.settings.storage.setItem(InteractionLogger.logStorageKey, null);
+        this.settings.storage.setItem(this.settings.logStorageKey, null);
     }
 
     public lastInteraction(): Interaction|null {
@@ -256,13 +259,13 @@ export default class InteractionLogger {
      */
     private logLastInteractionTimestamp(timestamp: number): void {
         this.settings.storage.setItem(
-            InteractionLogger.lastInteractionTimestampStorageKey,
+            this.settings.lastInteractionStorageKey,
             String(timestamp),
         );
     }
 
     private lastInteractionTimestamp(): number|null {
-        const timestampString = this.settings.storage.getItem(InteractionLogger.lastInteractionTimestampStorageKey);
+        const timestampString = this.settings.storage.getItem(this.settings.lastInteractionStorageKey);
         if (! timestampString) {
             return null;
         }
@@ -289,6 +292,6 @@ export default class InteractionLogger {
             log = log.slice(-this.settings.logLimit);
         }
 
-        this.settings.storage.setItem(InteractionLogger.logStorageKey, JSON.stringify(log));
+        this.settings.storage.setItem(this.settings.logStorageKey, JSON.stringify(log));
     }
 }
