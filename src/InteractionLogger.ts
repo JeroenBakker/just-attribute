@@ -64,11 +64,6 @@ export default class InteractionLogger {
         lastInteractionStorageKey: 'ja_last_interaction',
     };
 
-    /**
-     * @param sessionTimeout How long it takes for a session to end after inactivity, in milliseconds.
-     * The first interaction of a session will always be logged and can be attributed, even if it's direct.
-     * Defaults to 30 minutes.
-     */
     public constructor(
         settings: Partial<LoggerSettings> = {},
     ) {
