@@ -175,6 +175,7 @@ Planned:
 - Describe how to contribute
 - Add a code style linter/fixer to make contributing easier
 - Set up GitHub action to publish to npm
+- Figure out browser support (should be pretty good if you don't need to support IE or Opera mini)
 
 Undecided:
 - Whether to log the page URL as part of the interaction, this would allow users to get information about landing pages and how they perform.  
