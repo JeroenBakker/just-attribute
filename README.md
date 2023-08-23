@@ -150,6 +150,43 @@ A few middlewares have been provided:
 
 Please see the source of these middlewares for further details on their behavior.
 
+### Mapping referrals from search engines and social networks
+
+Two middlewares have been provided to automatically turn referrals from well-known search engines or social networks
+into organic search or organic social traffic, respectively.
+
+For example:
+```javascript
+import { InteractionLogger, ReferralMapper } from '@jeroen.bakker/just-attribute';
+
+const logger = new InteractionLogger();
+
+// By not passing in a list of search engines or social networks we use the default lists
+logger.registerInteractionMiddleware(ReferralMapper.newSearchEngineMiddleware());
+logger.registerInteractionMiddleware(ReferralMapper.newSocialNetworkMiddleware());
+
+// Usually you would just call logger.pageview()
+// but calling processInteraction() directly makes it easier to demonstrate the transformation
+logger.processInteraction({source: 'www.google.com', medium: 'referral'});
+logger.lastInteraction(); // Returns {source: 'Google', medium: 'organic'}
+
+logger.processInteraction({source: 'www.reddit.com', medium: 'referral'});
+logger.lastInteraction(); // Returns {source: 'reddit', medium: 'social'}
+```
+
+This is done by comparing referring domains to a small list of large [search engines](data/search-engines-basic.json) 
+and [social networks](data/social-networks-basic.json).  
+These lists have been manually compiled by using the [searchengine-and-social-list](https://github.com/matomo-org/searchengine-and-social-list)
+from Matomo as a starting point.
+
+The compiled lists have been kept intentionally small so that they don't add too much overhead
+if you decide to bundle them with the logger.  
+But if you want to save even more on data or need to include a larger list you could also run the middlewares
+on the interaction log, server-side.
+
+If you notice any obvious services missing from these lists feel free to open an issue or pull request.  
+Additionally, you can pass in your own list if you need more niche or regional services to be recognised.
+
 ### Asynchronous attribution
 
 This package is split into two main components:
@@ -169,8 +206,6 @@ This is purely intended to be used on the web, mobile apps have not been taken i
 There is currently no planned support for tracking redeemed discount codes or other promotions which could be used to attribute orders.
 
 Planned:  
-- Add out of the box implementation for recognising organic search based on a list of domains
-- Add out of the box implementation for recognising organic social media based on a list of domains
 - Add out of the box implementation for running attribution models in BigQuery using javascript UDFs
 - Describe how to contribute
 - Add a code style linter/fixer to make contributing easier
@@ -178,6 +213,6 @@ Planned:
 - Figure out browser support (should be pretty good if you don't need to support IE or Opera mini)
 
 Undecided:
-- Whether to log the page URL as part of the interaction, this would allow users to get information about landing pages and how they perform.  
+- Whether to log the page URL as part of the interaction, this would allow you to get information about landing pages and how they perform.  
   This is not intended as a full analytics tool, but this would take almost no effort to add and could provide a lot of value.  
   This can always be implemented as a middleware, but if it adds enough value it might make more sense to just enable it out of the box.
