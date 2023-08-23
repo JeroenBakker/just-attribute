@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Implemented this release automation: https://superface.ai/blog/npm-publish-gh-actions-changelog
+### Added
+
+- Middleware to recognise organic search and social traffic.
 
 ### Added
 

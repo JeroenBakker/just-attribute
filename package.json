@@ -5,10 +5,11 @@
   "author": "Jeroen Bakker",
   "license": "MIT",
   "scripts": {
-    "build": "esbuild src/*.ts src/*/*.ts --outdir=dist --bundle --format=esm --minify",
+    "build": "npm run esbuild && npm run tsc",
+    "esbuild": "esbuild src/*.ts src/*/*.ts --outdir=dist --bundle --format=esm --minify",
     "tsc": "tsc",
     "test": "jest",
-    "prepublishOnly": "npm run build && npm run tsc"
+    "prepublishOnly": "npm run build"
   },
   "type": "module",
   "main": "dist/index.js",
