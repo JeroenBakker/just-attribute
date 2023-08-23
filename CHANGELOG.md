@@ -7,12 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Implemented this release automation: https://superface.ai/blog/npm-publish-gh-actions-changelog
+## [0.4.0] - 2023-08-23
 
 ### Added
 
-- GitHub action to publish new versions to npm.
-- Automatically move unreleased changed to a new release section in the changelog.
+- Middleware to recognise organic search and social traffic.
 
 ## [0.3.2] - 2023-08-02
 

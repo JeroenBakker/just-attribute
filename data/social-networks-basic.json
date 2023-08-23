@@ -1,0 +1,15 @@
+{
+  "Facebook": ["facebook.com", "fb.me", "m.facebook.com", "l.facebook.com"],
+  "Hacker News": ["news.ycombinator.com"],
+  "Instagram": ["instagram.com", "l.instagram.com"],
+  "LinkedIn": ["linkedin.com", "lnkd.in"],
+  "Pinterest": ["pinterest.*", "pinterest.co.*", "pinterest.com.*"],
+  "reddit": ["reddit.com", "*.reddit.com"],
+  "Snapchat": ["snapchat.com"],
+  "TikTok": ["tiktok.com"],
+  "tumblr": ["tumblr.com", "t.umblr.com"],
+  "Twitter": ["twitter.com", "t.co", "x.com"],
+  "YouTube": ["youtube.com", "youtu.be"],
+  "Vimeo": ["vimeo.com"],
+  "Weibo": ["weibo.com"]
+}

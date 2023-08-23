@@ -1,14 +1,15 @@
 {
   "name": "@jeroen.bakker/just-attribute",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "Realtime privacy-conscious marketing attribution for the web",
   "author": "Jeroen Bakker",
   "license": "MIT",
   "scripts": {
-    "build": "esbuild src/*.ts src/*/*.ts --outdir=dist --bundle --format=esm --minify",
+    "build": "npm run esbuild && npm run tsc",
+    "esbuild": "esbuild src/*.ts src/*/*.ts --outdir=dist --bundle --format=esm --minify",
     "tsc": "tsc",
     "test": "jest",
-    "prepublishOnly": "npm run build && npm run tsc"
+    "prepublishOnly": "npm run build"
   },
   "type": "module",
   "main": "dist/index.js",
