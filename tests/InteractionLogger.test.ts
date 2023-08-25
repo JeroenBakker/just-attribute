@@ -131,6 +131,18 @@ test('it calls callback on changed attribution', async () => {
     expect(callback).toHaveBeenCalledTimes(2);
 });
 
+// By logging the interaction first, any subscribers can use the interaction log including the new interaction
+test('it logs interaction before notifying subscribers', () => {
+    const logger = new InteractionLogger();
+
+    const assertLogHasOneEntry = () => {
+        expect(logger.interactionLog().length).toBe(1);
+    };
+
+    logger.onAttributionChange(assertLogHasOneEntry);
+    logger.pageview(new URL('https://example.com/'), false);
+});
+
 test('it clears the log', async () => {
     const logger = new InteractionLogger();
     logger.pageview(new URL('https://example.com/'), false);

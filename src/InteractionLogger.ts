@@ -115,10 +115,10 @@ export default class InteractionLogger {
         }
 
         if (this.hasAttributionChanged(interaction, lastInteractionTimestamp)) {
+            this.logInteraction(interaction);
+
             // Notify all subscribers that the attribution has changed and pass along the latest attribution
             this.attributionChangeCallbacks.forEach((callback) => callback(interaction));
-
-            this.logInteraction(interaction);
         }
     }
 

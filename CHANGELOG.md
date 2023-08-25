@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] - 2023-08-25
+
+### Fixed
+
+- Subscribers are now notified of changed attribution after logging the new interaction.  
+This way the subscribers have access to the full interaction log, including the interaction that just changed attribution.
+
 ## [0.4.0] - 2023-08-23
 
 ### Added
