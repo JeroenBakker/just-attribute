@@ -11,6 +11,7 @@ import { TestMiddleware } from './fixtures/TestMiddleware';
 const storageSpy: any = {
     getItem: jest.fn(),
     setItem: jest.fn(),
+    removeItem: jest.fn(),
     clear: jest.fn()
 };
 
@@ -144,12 +145,14 @@ test('it logs interaction before notifying subscribers', () => {
 });
 
 test('it clears the log', async () => {
-    const logger = new InteractionLogger();
+    const storage = new MemoryStorage();
+    const logger = new InteractionLogger({storage: storage});
     logger.pageview(new URL('https://example.com/'), false);
 
     expect(logger.interactionLog().length).toBe(1);
 
     logger.clearLog();
+    expect(storage.hasItem(logger.settings.logStorageKey)).toBe(false);
     expect(logger.interactionLog().length).toBe(0);
 });
 
@@ -158,7 +161,7 @@ test('it does not clear the whole storage', async () => {
 
     logger.clearLog();
 
-    expect(storageSpy.setItem).toHaveBeenCalledTimes(1);
+    expect(storageSpy.removeItem).toHaveBeenCalledTimes(1);
     expect(storageSpy.clear).toHaveBeenCalledTimes(0);
 });
 
@@ -179,6 +182,11 @@ test('it handles an invalid log', async () => {
     storage.setItem('ja_interaction_log', '<invalid_json>');
 
     expect(logger.interactionLog()).toEqual([]);
+
+    // Assert that we can still log new interactions
+    logger.pageview(new URL('https://example.com/'), false);
+    expect(logger.interactionLog().length).toEqual(1);
+    expect(logger.lastInteraction().direct).toBe(true);
 });
 
 test('it handles an invalid last interaction', async () => {
