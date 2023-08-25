@@ -384,3 +384,11 @@ test('the last interaction storage key can be set', async () => {
 
     expect(storage.getItem('foo')).toBe('1');
 });
+
+test('empty UTM parameters are skipped', async () => {
+    const logger = new InteractionLogger();
+
+    const interaction = logger.determineInteraction(new URL('https://www.example.com?utm_source=foo&utm_medium=bar&utm_campaign='));
+
+    expect(interaction).toEqual({source: 'foo', medium: 'bar', timestamp: expect.any(Number)});
+});
