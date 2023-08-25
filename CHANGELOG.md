@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.2] - 2023-08-25
+
+### Fixed
+
+- Clear log no longer sets null but it actually removes the storage item.  
+Because the localStorage stores strings, and "null" is a string and valid JSON it was passing all checks 
+and it was being returned instead of an empty array.
+
 ## [0.4.1] - 2023-08-25
 
 ### Fixed

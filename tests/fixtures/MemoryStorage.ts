@@ -27,5 +27,14 @@ export default class MemoryStorage implements Storage {
     }
 
     public removeItem(key: string): void {
+        delete this.store[key];
+    }
+
+    /**
+     * custom method to make it easier to test whether a key exists
+     * since when getItem() returns null, you can't tell whether it didn't exist or it actually contained null
+     */
+    public hasItem(key: string): boolean {
+        return this.store.hasOwnProperty(key);
     }
 }

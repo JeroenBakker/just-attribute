@@ -196,7 +196,7 @@ export default class InteractionLogger {
      * This could be used after a user has converted and the attribution has been determined.
      */
     public clearLog(): void {
-        this.settings.storage.setItem(this.settings.logStorageKey, null);
+        this.settings.storage.removeItem(this.settings.logStorageKey);
     }
 
     public lastInteraction(): Interaction|null {
