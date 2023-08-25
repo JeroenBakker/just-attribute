@@ -127,7 +127,7 @@ export default class InteractionLogger {
 
         url.searchParams.forEach((value, key) => {
             const mappedKey = InteractionLogger.queryMapping[key];
-            if (mappedKey) {
+            if (mappedKey && value.length) {
                 interaction[mappedKey] = value;
             } else {
                 // Empty parameters can be considered missing as they don't tell us anything
