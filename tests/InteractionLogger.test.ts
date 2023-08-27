@@ -392,3 +392,31 @@ test('empty UTM parameters are skipped', async () => {
 
     expect(interaction).toEqual({source: 'foo', medium: 'bar', timestamp: expect.any(Number)});
 });
+
+test.each([
+    [String(Number.MAX_VALUE) + String(1)],
+    [String(Number.MIN_VALUE) + String(1)],
+    String(Infinity),
+    String(-Infinity),
+    'NaN',
+    'abc',
+])('it handles invalid last interaction timestamp', (lastInteractionTimestamp: string) => {
+    const lastInteractionStorageKey = 'last_interaction_timestamp';
+    const storage = new MemoryStorage();
+
+    const logger = new InteractionLogger({lastInteractionStorageKey, storage, sessionTimeout: 100});
+    // Log an initial interaction, otherwise a new interaction will always change attribution
+    logger.processInteraction({source: 'test', medium: 'test', timestamp: 10});
+
+    // Mess with the last interaction, setting it above a valid number
+    storage.setItem(lastInteractionStorageKey, lastInteractionTimestamp);
+
+    // Log a new direct interaction, forcing a check of the last interaction
+    logger.processInteraction({direct: true, timestamp: 11});
+
+    // A new interaction should always overwrite the last interaction timestamp
+    expect(storage.getItem(lastInteractionStorageKey)).toBe('11');
+
+    // The invalid timestamp should have caused a new interaction to change attribution
+    expect(logger.lastInteraction()).toEqual({direct: true, timestamp: 11});
+});

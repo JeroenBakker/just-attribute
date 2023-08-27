@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.4] - 2023-08-27
+
+### Changed
+
+- Too large, small or otherwise invalid last interaction timestamps are explicitly handled.
+
 ## [0.4.3] - 2023-08-25
 
 ### Changed
