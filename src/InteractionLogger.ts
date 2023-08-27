@@ -43,7 +43,6 @@ export default class InteractionLogger {
         utm_term: 'term',
     };
 
-    private interactionLogCache: Interaction[] | null = null;
     private interactionMiddlewares: InteractionMiddleware[] = [];
     private attributionChangeCallbacks: Array<(Interaction) => any> = [];
 
@@ -180,22 +179,16 @@ export default class InteractionLogger {
     }
 
     public interactionLog(): Interaction[] {
-        this.interactionLogCache ??= deserializeInteractionLog.call(this);
+        const jsonLog = this.settings.storage.getItem(this.settings.logStorageKey);
 
-        return this.interactionLogCache;
+        if (!jsonLog) {
+            return [];
+        }
 
-        function deserializeInteractionLog() {
-            const jsonLog = this.settings.storage.getItem(this.settings.logStorageKey);
-
-            if (!jsonLog) {
-                return [];
-            }
-
-            try {
-                return JSON.parse(jsonLog) as Interaction[];
-            } catch {
-                return [];
-            }
+        try {
+            return JSON.parse(jsonLog) as Interaction[];
+        } catch {
+            return [];
         }
     }
 
@@ -204,7 +197,6 @@ export default class InteractionLogger {
      * This could be used after a user has converted and the attribution has been determined.
      */
     public clearLog(): void {
-        this.interactionLogCache = null;
         this.settings.storage.removeItem(this.settings.logStorageKey);
     }
 
@@ -300,7 +292,6 @@ export default class InteractionLogger {
             log = log.slice(-this.settings.logLimit);
         }
 
-        this.interactionLogCache = log;
         this.settings.storage.setItem(this.settings.logStorageKey, JSON.stringify(log));
     }
 }
