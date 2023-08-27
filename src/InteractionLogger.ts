@@ -1,4 +1,4 @@
-import { Interaction, InteractionMiddleware } from './types';
+import {Interaction, InteractionMiddleware} from './types';
 
 interface LoggerSettings {
     /**
@@ -43,6 +43,7 @@ export default class InteractionLogger {
         utm_term: 'term',
     };
 
+    private interactionLogCache: Interaction[] | null = null;
     private interactionMiddlewares: InteractionMiddleware[] = [];
     private attributionChangeCallbacks: Array<(Interaction) => any> = [];
 
@@ -80,7 +81,7 @@ export default class InteractionLogger {
      * If you wish to disable the gathering of the referrer for a specific pageview you can pass false as the argument,
      * e.g. on pages that are often redirected to by payment providers to prevent accidental referral attribution.
      */
-    public pageview(url?: URL, referrer?: URL|false) {
+    public pageview(url?: URL, referrer?: URL | false) {
         if (typeof url === 'undefined') {
             url = new URL(document.location.href);
         }
@@ -88,7 +89,8 @@ export default class InteractionLogger {
         if (typeof referrer === 'undefined' && this.settings.detectReferrals) {
             try {
                 referrer = document.referrer ? new URL(document.referrer) : undefined;
-            } catch {}
+            } catch {
+            }
         }
 
         let interaction: Interaction = this.determineInteraction(url, referrer || undefined);
@@ -178,16 +180,22 @@ export default class InteractionLogger {
     }
 
     public interactionLog(): Interaction[] {
-        const jsonLog = this.settings.storage.getItem(this.settings.logStorageKey);
+        this.interactionLogCache ??= deserializeInteractionLog.call(this);
 
-        if (! jsonLog) {
-            return [];
-        }
+        return this.interactionLogCache;
 
-        try {
-            return JSON.parse(jsonLog) as Interaction[];
-        } catch {
-            return [];
+        function deserializeInteractionLog() {
+            const jsonLog = this.settings.storage.getItem(this.settings.logStorageKey);
+
+            if (!jsonLog) {
+                return [];
+            }
+
+            try {
+                return JSON.parse(jsonLog) as Interaction[];
+            } catch {
+                return [];
+            }
         }
     }
 
@@ -196,28 +204,28 @@ export default class InteractionLogger {
      * This could be used after a user has converted and the attribution has been determined.
      */
     public clearLog(): void {
+        this.interactionLogCache = null;
         this.settings.storage.removeItem(this.settings.logStorageKey);
     }
 
-    public lastInteraction(): Interaction|null {
+    public lastInteraction(): Interaction | null {
         const log = this.interactionLog();
 
         return log[log.length - 1] ?? null;
     }
 
     private referralFromUrl(referrer: URL): Interaction {
-        // @todo map known hostnames to organic or social
         return {
             source: referrer.hostname,
             medium: 'referral',
         };
     }
 
-    private hasAttributionChanged(interaction: Interaction, lastInteractionTimestamp: number|null): boolean {
+    private hasAttributionChanged(interaction: Interaction, lastInteractionTimestamp: number | null): boolean {
         const lastChangedInteraction = this.lastInteraction();
 
         // If there is no previously logged interaction, attribution has changed
-        if (! lastChangedInteraction || ! lastInteractionTimestamp) {
+        if (!lastChangedInteraction || !lastInteractionTimestamp) {
             return true;
         }
 
@@ -264,14 +272,14 @@ export default class InteractionLogger {
         );
     }
 
-    private lastInteractionTimestamp(): number|null {
+    private lastInteractionTimestamp(): number | null {
         const timestampString = this.settings.storage.getItem(this.settings.lastInteractionStorageKey);
-        if (! timestampString) {
+        if (!timestampString) {
             return null;
         }
 
         const timestamp = Number(timestampString);
-        if (!timestamp) {
+        if (!timestamp || !Number.isFinite(timestamp)) {
             return null
         }
 
@@ -292,6 +300,7 @@ export default class InteractionLogger {
             log = log.slice(-this.settings.logLimit);
         }
 
+        this.interactionLogCache = log;
         this.settings.storage.setItem(this.settings.logStorageKey, JSON.stringify(log));
     }
 }
