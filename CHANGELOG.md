@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.5] - 2023-08-28
+
+### Changed
+
+- Make all referring services lower case.
+
 ## [0.4.4] - 2023-08-27
 
 ### Changed
