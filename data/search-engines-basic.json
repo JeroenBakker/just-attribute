@@ -1,9 +1,9 @@
 {
-  "AOL": ["aol.com"],
-  "Baidu": ["baidu.com"],
-  "Bing": ["bing.com"],
-  "DuckDuckGo": ["duckduckgo.com"],
-  "Google": ["google.*", "google.co.*", "google.com.*"],
-  "Yahoo": ["*.yahoo.*"],
-  "Yandex": ["yandex.com"]
+  "aol": ["aol.com"],
+  "baidu": ["baidu.com"],
+  "bing": ["bing.com"],
+  "duckduckgo": ["duckduckgo.com"],
+  "google": ["google.*", "google.co.*", "google.com.*"],
+  "yahoo": ["*.yahoo.*"],
+  "yandex": ["yandex.com"]
 }
