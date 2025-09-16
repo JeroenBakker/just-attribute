@@ -144,6 +144,14 @@ export default class InteractionLogger {
             return interaction;
         }
 
+        // If we get a source with no medium, set the referral medium to preserve the source;
+        // otherwise it would've been assigned to referral anyway based on its host as the source
+        if (interaction.source) {
+            interaction.medium = 'referral';
+
+            return interaction;
+        }
+
         // If we can't determine the attribution from our current URL and there is no referrer (other than the current host),
         // this is a direct pageview
         if (!referrer || url.hostname === referrer.hostname) {

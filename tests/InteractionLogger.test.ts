@@ -23,20 +23,22 @@ test.each([
     // No parameters
     ['https://example.com/', '', {direct: true}],
     // Incomplete UTM parameters
-    ['https://example.com/?utm_source=s', '', {source: 's', direct: true}],
     ['https://example.com/?utm_medium=m', '', {medium: 'm', direct: true}],
     ['https://example.com/?utm_campaign=cm', '', {campaign: 'cm', direct: true}],
     ['https://example.com/?utm_content=cn', '', {content: 'cn', direct: true}],
     ['https://example.com/?utm_term=t', '', {term: 't', direct: true}],
+    // Only source
+    ['https://example.com/?utm_source=s', '', {source: 's', medium: 'referral'}],
     // Complete UTM parameters
     ['https://example.com/?utm_source=s&utm_medium=m', '', {source: 's', medium: 'm'}],
     ['https://example.com/?utm_source=s&utm_medium=m&utm_campaign=cm', '', {source: 's', medium: 'm', campaign: 'cm'}],
     ['https://example.com/?utm_source=s&utm_medium=m&utm_campaign=cm&utm_content=cn', '', {source: 's', medium: 'm', campaign: 'cm', content: 'cn'}],
     ['https://example.com/?utm_source=s&utm_medium=m&utm_campaign=cm&utm_content=cn&utm_term=t', '', {source: 's', medium: 'm', campaign: 'cm', content: 'cn', term: 't'}],
+    // Only source with extra parameters
+    ['https://example.com/?utm_source=s&test=jest&a=b', '', {source: 's', medium: 'referral', parameters: {test: 'jest', a: 'b'}}],
+    ['https://example.com/?utm_source=s&test=&a=b', '', {source: 's', medium: 'referral', parameters: {a: 'b'}}],
     // Incomplete UTM parameters with extra parameters
     ['https://example.com/?test=jest&a=b', '', {parameters: {test: 'jest', a: 'b'}, direct: true}],
-    ['https://example.com/?utm_source=s&test=jest&a=b', '', {source: 's', parameters: {test: 'jest', a: 'b'}, direct: true}],
-    ['https://example.com/?utm_source=s&test=&a=b', '', {source: 's', parameters: {a: 'b'}, direct: true}],
     // Complete UTM parameters with extra parameters
     ['https://example.com/?utm_source=s&utm_medium=m&test=jest&a=b', '', {source: 's', medium: 'm', parameters: {test: 'jest', a: 'b'}}],
     // Complete parameters with referrer
@@ -51,9 +53,12 @@ test.each([
     const url = new URL(currentUrl);
     const referrer = referrerUrl ? new URL(referrerUrl) : undefined;
 
-    const interaction = logger.determineInteraction(url, referrer);
 
-    expect(interaction).toMatchObject(expectedValues);
+    const interaction = logger.determineInteraction(url, referrer);
+    // Unset the timestamp since it won't match and isn't relevant here
+    delete interaction.timestamp;
+
+    expect(interaction).toEqual(expectedValues);
 });
 
 test.each([
@@ -123,7 +128,7 @@ test('it calls callback on changed attribution', async () => {
 
     expect(callback).toHaveBeenCalledWith({direct: true, timestamp: expect.any(Number)});
 
-    logger.pageview(new URL('https://example.com/?utm_source=s'), false);
+    logger.pageview(new URL('https://example.com/?utm_campaign=s'), false);
     // It should not have been called again
     expect(callback).toHaveBeenCalledTimes(1);
 
