@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Declared exports in package.json, allowing for easier importing when using more modern module resolution
+
 ## [0.5.0] - 2025-09-16
 
 ### Changed
